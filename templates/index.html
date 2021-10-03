@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh-tw">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap & jQuery -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+        crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP:light');
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: rgb(248, 248, 248);
+        }
+
+        /* 搜尋列 */
+        #genre-container {
+            padding: .25rem 0rem 0rem 0rem;
+            border-left-color: #ffffff00;
+            border-right-color: #ffffff00;
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+            color: #6c757d;
+        }
+
+        /* 作品名提示 */
+        #work-tip {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        /* 搜尋列左側按鈕 */
+        .btn-left {
+            border-radius: 10px 0px 0px 10px;
+        }
+
+        /* 搜尋列右側按鈕 */
+        .btn-right {
+            border-radius: 0px 10px 10px 0px;
+        }
+
+        /* 搜尋列內按鈕 */
+        .btn-inline {
+            border-top-color: #ced4da;
+            border-bottom-color: #ced4da;
+            border-left-color: #ffffff00;
+            border-right-color: #ffffff00;
+            color: #6c757d;
+
+        }
+
+        /* 列表展開按鈕 */
+        .btn-expand {
+            color: black;
+        }
+
+        /* 標籤列表開啟按鈕 */
+        .btn-add-genre {
+            color: black;
+            border-width: 1px;
+            border-color: #ced4da;
+            border-radius: 10px;
+            font-size: .875em;
+        }
+
+        .btn-add-genre:hover {
+            background-color: rgb(248, 248, 248);
+        }
+
+        /* 單選按鈕 */
+        .btn-radio {
+            border-radius: 10px;
+        }
+
+        .img-radio {
+            border-width: 0px;
+            background-color: rgb(248, 248, 248);
+        }
+
+        /* 表單用的標籤按鈕 */
+        .label {
+            border-radius: 7px;
+            padding: 3px 7px 3px 7px;
+            margin: 0px 2px 2px 0px;
+            font-size: .875em;
+        }
+
+        .label:hover {
+            cursor: default;
+        }
+
+
+
+
+        /* 結果卡上的作品標籤 */
+        .genre-label {
+            border-radius: 7px;
+            margin-bottom: 5px;
+            padding: 3px 10px 3px 10px;
+        }
+
+        .genre-label:hover {
+            cursor: default;
+        }
+
+        .card {
+            margin: 5px 0px 5px 0px;
+            border-radius: 8px;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
+        }
+
+        .card-img {
+            border-radius: 10px;
+        }
+
+        .badge {
+            font-size: 9.5pt;
+            background-color: rgb(87, 115, 151);
+            margin-right: 4px;
+        }
+
+        .progress {
+            background-color: rgb(248, 248, 248);
+        }
+
+        .progress-bar {
+            background-color: #ced4da;
+            color: black;
+            border-width: 1px;
+        }
+
+        /* 令 modal 內部可以捲動 */
+        .modal-dialog {
+            overflow-y: initial !important
+        }
+
+        .modal-body {
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+
+        /*  */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            border: none;
+            /* Remove borders */
+            outline: none;
+            /* Remove outline */
+            color: white;
+            /* Text color */
+            padding: 15px;
+            /* Some padding */
+            border-radius: 8px;
+            /* Rounded corners */
+            font-size: 18px;
+            /* Increase font size */
+        }
+    </style>
+
+    <title>DLfilter</title>
+</head>
+
+<body>
+    <!-- Back to top -->
+    <button onclick="topFunction()" id="myBtn" title="Go to top" class="btn bg-danger">TOP</i></button>
+
+    <!-- Genres Modal -->
+    <div class="modal fade" id="genre-select-Modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Genre-ModalLabel"><b><i class="fas fa-tags"></i> 標籤列表</b></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <input class="form-control" placeholder="計畫中" disabled style="display: none;">
+                        <div class="text-center">
+                            <p id="modal-desc"></p>
+                            <div id="modal-main-container">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body" id="genre-form" data-genres="">
+
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-sm-10 offset-sm-1"
+                style="background-color: white; padding: 25px 50px 0px 50px; border-radius: 0px 0px 25px 25px;">
+                <h5 style="margin-bottom: 20px;"><b>搜尋類似作品 </b><small><i class="far fa-question-circle"
+                            data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="您可以輸入作品編號，或直接新增標籤來開始搜尋。"></i></small></h5>
+
+                <!-- Search forms -->
+                <div class="row">
+                    <div class="form-group col-md-3 mb-3">
+                        <!-- Work ID -->
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="rjid" placeholder="RJ123456" value="RJ318200"
+                                style="border-radius: 10px; padding-left: 1rem;">
+                        </div>
+
+                        <!-- Error msg goes here -->
+                        <div id="work-tip-container" class="row collapse">
+                            <p id="work-tip" class="text-center"></p>
+                        </div>
+
+                        <!-- Categories option -->
+                        <div>
+                            <select class="form-select mb-2" id="category-select" style="border-radius:10px;">
+                                <option value="0" selected>未選擇類別</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="category-check" disabled>
+                                <label class="form-check-label" for="category-check">
+                                    只搜尋同類別作品
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-9 mb-3">
+                        <!-- Search bar -->
+                        <div class="input-group mb-3">
+                            <button type="button" class='btn btn-outline-primary btn-left' data-bs-toggle="modal"
+                                data-bs-target="#genre-select-Modal" data-genres="Add"><i
+                                    class="fas fa-plus"></i></button>
+                            <button type="button" class='btn btn-inline' data-bs-toggle="collapse"
+                                data-bs-target=".multi-collapse"><i class="fas fa-sliders-h"></i></button>
+                            <div id="genre-container" class="form-control">
+                                <small id="genre-container-tip">這裡會出現您所選擇的標籤</small>
+                            </div>
+                            <button type="button" class='btn btn-inline' id="btn-delall"><i
+                                    class="fas fa-times"></i></button>
+                            <button type="button" class='btn btn-primary btn-right btn-search'><i
+                                    class="fas fa-search"></i></button>
+                        </div>
+
+                        <!-- Error msg goes here -->
+                        <div id="input-tip-container" class="row collapse">
+                            <p id="input-tip" class="text-center"></p>
+                        </div>
+
+                        <!-- In/Excluded genres -->
+                        <div class="row mb-1 mx-auto align-items-center">
+                            <button class="btn btn-add-genre col-auto mt-1" data-bs-toggle="modal"
+                                data-bs-target="#genre-select-Modal" data-genres="Included"><i class="fas fa-plus"></i>
+                                包含標籤</button>
+                            <div class="col-auto mt-1" id="included-container">
+                                <small id="included-tip" style='color: #6c757d; border-bottom: 2px dotted #6c757d;'
+                                    data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                                    title="當您已經確定作品一定要包含某些標籤時。例如，您可能希望搜尋到的<u>校園類型</u>作品，要有<u>眼鏡</u>的標籤。">什麼時候需要強制包含標籤？</small>
+                            </div>
+                        </div>
+                        <div class="row mb-1 mx-auto align-items-center">
+                            <button class="btn btn-add-genre col-auto mt-1" data-bs-toggle="modal"
+                                data-bs-target="#genre-select-Modal" data-genres="Excluded"><i class="fas fa-minus"></i>
+                                排除標籤</button>
+                            <div class="col-auto mt-1" id="excluded-container">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advance option -->
+                <div id="detail-opt" class="collapse  mb-4 multi-collapse">
+                    <p><b><i class="fas fa-sliders-h"></i> 進階搜尋選項</b></p>
+                    <!-- Slider -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="popular-range" class="form-label">依作品人氣加權</label>
+                            <input type="range" class="form-range" id="popular-range">
+                            <div class="row  justify-content-between">
+                                <div class="col-sm-auto" style="margin-top: -10px; margin-left: 2px; color: #6c757d;">
+                                    <small>熱門</small>
+                                </div>
+                                <div class="col-sm-auto" style="margin-top: 0px;">
+                                    <p id="popular-tip">不加權</p>
+                                </div>
+                                <div class="col-sm-auto" style="margin-top: -10px; margin-right: 2px; color: #6c757d;">
+                                    <small>冷門</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="date-range" class="form-label">依上市時間篩選</label>
+                            <input type="range" class="form-range" id="date-range" value=0>
+                            <div class="row  justify-content-between">
+                                <div class="col-sm-auto" style="margin-top: -10px; margin-left: 2px; color: #6c757d;">
+                                    <small>較舊</small>
+                                </div>
+                                <div class="col-sm-auto" style="margin-top: 0px;">
+                                    <p id="date-tip">不篩選</p>
+                                </div>
+                                <div class="col-sm-auto" style="margin-top: -10px; margin-right: 2px; color: #6c757d;">
+                                    <small>較新</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-3">
+                        <div class="col-md-6">
+                            <p>標籤加權函數</p>
+                            <div class="row text-center">
+                                <div class="col-lg-3 col-sm-6 mb-3">
+                                    <label for="option1"><img class="img-thumbnail img-radio"
+                                            src="{{ url_for('static', path='/r_logistic.png') }}"></label>
+                                    <input type="radio" class="btn-check" name="weight-func" id="option1" value=1;
+                                        autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary btn-radio" for="option1">邏輯函數 <small><i
+                                                class="far fa-question-circle" data-bs-toggle="tooltip"
+                                                title=" 降低熱門標籤的權重以更好地分辨作品特性。"></i></small></label>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 mb-3">
+                                    <label for="option2"><img class="img-thumbnail img-radio"
+                                            src="{{ url_for('static', path='/logistic.png') }}"></label>
+                                    <input type="radio" class="btn-check" name="weight-func" id="option2" value=2;
+                                        autocomplete="off">
+                                    <label class="btn btn-outline-primary btn-radio" for="option2">反轉邏輯函數 <small><i
+                                                class="far fa-question-circle" data-bs-toggle="tooltip"
+                                                title="降低冷門標籤的權重以排除離群值。"></i></small></label>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 mb-3">
+                                    <label for="option3"><img class="img-thumbnail img-radio"
+                                            src="{{ url_for('static', path='/gaussian.png') }}"></label>
+                                    <input type="radio" class="btn-check" name="weight-func" id="option3" value=3;
+                                        autocomplete="off">
+                                    <label class="btn btn-outline-primary btn-radio" for="option3">常態分佈函數 <small><i
+                                                class="far fa-question-circle" data-bs-toggle="tooltip"
+                                                title="同時降低熱門跟冷門標籤的權重。這究竟有什麼用呢？"></i></small></label>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 mb-3">
+                                    <label for="option4"><img class="img-thumbnail img-radio"
+                                            src="{{ url_for('static', path='/linear.png') }}"></label>
+                                    <input type="radio" class="btn-check" name="weight-func" id="option4" value=4;
+                                        autocomplete="off">
+                                    <label class="btn btn-outline-primary btn-radio" for="option4">單調函數 <small><i
+                                                class="far fa-question-circle" data-bs-toggle="tooltip"
+                                                title="不依照標籤熱門度進行加權。最保守的選擇。"></i></small></label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="row justify-content-around">
+
+                                <!-- Checkboxs -->
+                                <div class="col-auto align-items-center mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="all-age-check">
+                                        <label class="form-check-label" for="all-age-check">
+                                            搜尋全年齡作品 <small><i class="far fa-question-circle" data-bs-toggle="tooltip"
+                                                    data-bs-placement="right" title=" 這會排除 R-18 作品。"></i></small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="r15-check">
+                                        <label class="form-check-label" for="r15-check">
+                                            包括 R-15 作品
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="low-rate-check" checked>
+                                        <label class="form-check-label" for="low-rate-check">
+                                            排除較低評價 / 無評價的作品
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="interest-check" checked
+                                            disabled>
+                                        <label class="form-check-label" for="interest-check">
+                                            排除已關注的作品
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Search button -->
+                                <div class="col-auto align-self-end">
+                                    <button class="btn btn-primary btn-lg btn-search"
+                                        style="padding-left: 30px;padding-right: 30px;"><i class="fas fa-search"></i>
+                                        搜尋</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id='result-row'>
+            <div class="col-md-10 offset-md-1 collapse" id="result-container"
+                style="background-color: white; padding: 25px 50px 50px 50px; border-radius: 25px 25px 0px 0px;">
+                <h5><b>結果</b></h5>
+                <div class="row" id="result_list">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <figure class="text-center" id="footer-quote" style="display: none;">
+        <blockquote class="blockquote">
+            <p>思九州之博大兮，豈唯是其有女？</p>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            或許我們離您的理想還很遠。
+        </figcaption>
+    </figure>
+    <br>
+    <br>
+</body>
+
+</html>
