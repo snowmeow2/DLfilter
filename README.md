@@ -37,7 +37,7 @@ $.../DLfilter python initial.py -g --date <START_DATE> <END_DATE>
 這會在`.../DLfilter/database/`建立從`<START_DATE>`到`<END_DATE>`發售的作品資料庫及並計算各標籤的向量嵌入。預設以`distiluse-base-multilingual-cased-v2`來計算。`--model <NAME>`以使用其他支援的語言模型。
 
 
-你也可以直接從[這裡](#)下載預先建立好的資料庫。(WIP)
+你也可以直接從[這裡](https://drive.google.com/file/d/12hbh-XMiUXKKYsVh38k-8YI8AMm0S0GP/view?usp=sharing)下載預先建立好的資料庫。（2000-01-01 ~ 2021-09-30）
 
 #### 更新某日的資料庫
 ```
