@@ -129,10 +129,21 @@ class DLsite_catalog:
 class genre_catalog:
     def __init__(self, target, path=None):
         self.target = target
+        self.class_names = {
+            1: ['アクション', 'クイズ', 'アドベンチャー', 'ロールプレイング', 'テーブル', 'デジタルノベル', 'シミュレーション', 'タイピング', 'シューティング', 'パズル', 'その他ゲーム'],
+            2: ['マンガ', '劇画'],
+            3: ['CG・イラスト'],
+            4: ['ノベル', '官能小説'],
+            5: ['動画'],
+            6: ['ボイス・ASMR'],
+            7: ['音楽'],
+            8: ['ツール/アクセサリ', '画像素材', '音素材'],
+            9: ['その他', 'ボイスコミック'],
+        }
         if path is None:
             self.table = {}
             self.genre_class_names = set()
-            self.embeddings = None
+            self.embeddings = {}
 
             self._update_counts()
         else:
@@ -202,7 +213,15 @@ class genre_catalog:
 
     def compute_embeddings(self, model, path):
         genre_list = self.get_genre_list()
-        self.embeddings = {k:v for k,v in zip(genre_list, model.encode(genre_list))}
+        for i in genre_list:
+            if '/' in i:
+                temp_i = i.split('/')
+                temp_i = sum(model.encode(temp_i))/len(temp_i)
+                self.embeddings[i] = temp_i
+            else:
+                self.embeddings[i] = model.encode([i])[0]
+
+        # self.embeddings = {k:v for k,v in zip(genre_list, model.encode(genre_list))}
         np.save(path+r'\genre_vec.npy', self.embeddings)
 
     def get_weighting(self, weight_func='r_logistic'):
