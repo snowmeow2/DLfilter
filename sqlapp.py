@@ -3,12 +3,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import Optional, List
+from datetime import datetime
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.stats import norm
 from module.dlsite import DLsite_catalog, genre_catalog
 import numpy as np
 import pandas as pd
 import time
+import os
 import sqlite3
 
 
@@ -46,6 +48,7 @@ def works_vector(df, weights):  # 0.04s for 2700 items/
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+database_path = "database/works.sqlite"
 templates = Jinja2Templates(directory="templates")
 lang_set = {'jp', 'en', 'zh-tw', 'zh-cn'}
 
@@ -59,6 +62,19 @@ def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get('/api/info')
+def get_info():
+    t = os.path.getmtime(database_path)
+    t = datetime.utcfromtimestamp(t).strftime('%Y-%m-%d %H:%M:%S')
+    db = sqlite3.connect(database_path)
+    cur = db.cursor()
+    cur.execute("SELECT COUNT([index]) FROM maniax")
+    length = cur.fetchone()[0]
+    db.close()
+
+    return {'len': length, 'time': t}
+
+
 @app.get('/api/genres/{lang}')
 def get_genres(lang: str):
     if lang in lang_set:
@@ -70,18 +86,17 @@ def get_genres(lang: str):
 
 @app.get('/api/works')
 def get_works(rj_id: str = Query(..., regex=r"^RJ\d\d\d\d\d\d$")):
-    db = sqlite3.connect("database/works.sqlite")
+    db = sqlite3.connect(database_path)
     content = pd.read_sql_query(
         "SELECT * FROM maniax WHERE [index] == "+rj_id[2:], db)
     if not len(content):
         raise HTTPException(status_code=404, detail="The work is unavailable.")
 
+    content = content.astype('object')
     result = content.iloc[0].to_dict()
     result['labels'] = [i for i in result['labels'].split('#') if i]
-    result['sells'] = result['sells'].item()
-    result['rating'] = result['rating'].item()
-
     db.close()
+
     return result
 
 
@@ -103,7 +118,7 @@ def get_similar_works(
 ):
     # check if id or labels are recorded in DB
     start = time.time()
-    db = sqlite3.connect("database/works.sqlite")
+    db = sqlite3.connect(database_path)
     query = "SELECT [index], labels, sells FROM maniax WHERE for_age IN (#QUERY_AGE)"
 
     # check if is work
@@ -132,8 +147,10 @@ def get_similar_works(
         month = date_function(date)
         query += " AND date > date('now', '-{} months')".format(month)
 
-    # if categories and not exclusive_category:
-    #     pass
+    if categories > 0 and not exclusive_category:
+        temp_query = " OR ".join(["category == '{}'".format(i) for i in GG.class_names[categories]])
+        query += " AND (" + temp_query + ")"
+        
     # if excluding_interest:
     #     pass
 
@@ -161,7 +178,7 @@ def get_similar_works(
 
     end = time.time()
     print('Time spent in database: {}'.format(end - start))
-    start = time.time()
+    start2 = time.time()
 
     weights = GG.get_weighting(weight_func)
     query_embedding = sum([weights[i] for i in genre_list])/len(genre_list)
@@ -188,9 +205,10 @@ def get_similar_works(
     result = result.sort_values(['similarity'], ascending=False)
     result.index = result['index']
     result = result.to_dict('record')
-
-    end = time.time()
-    print('Time spent in computation: {}'.format(end - start))
     db.close()
+
+    end2 = time.time()
+    print('Time spent in computation: {}'.format(end2 - start2))
+    result.append({"respond_len":len(respond) ,"result_len":len(result) ,"time": round(end2-start, 2)})
 
     return result
