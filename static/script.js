@@ -10,7 +10,7 @@ const result_card_template = `
             <div class="col-md-8">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <p class="genre-label btn btn-secondary">GENRE_BUTTON</p>
+                        <p class="genre-label btn" style="STYLE">GENRE_BUTTON</p>
                         <b>TITLE</b>
                     </h5>
                     <p class="card-text">
@@ -65,6 +65,29 @@ const genre_individual_template = `
     </button> 
 </div>
 `;
+const genre_class_color_dict = {
+'CG・イラスト':['#e9f5ff', '#5d84a7'],
+'その他':['#eeeeee', '#777777'],
+'その他ゲーム':['#f5eaff', '#935fc1'],
+'アクション':['#f5eaff', '#935fc1'],
+'アドベンチャー':['#f5eaff', '#935fc1'],
+'クイズ':['#f5eaff', '#935fc1'],
+'シミュレーション':['#f5eaff', '#935fc1'],
+'シューティング':['#f5eaff', '#935fc1'],
+'タイピング':['#f5eaff', '#935fc1'],
+'ツール/アクセサリ':['#eeeeee', '#777777'],
+'テーブル':['#f5eaff', '#935fc1'],
+'デジタルノベル':['#f5eaff', '#935fc1'],
+'ノベル':['#eeeeee', '#777777'],
+'パズル':['#f5eaff', '#935fc1'],
+'ボイスコミック':['#eeeeee', '#777777'],
+'ボイス・ASMR':['#fbeeca', '#c56601'],
+'マンガ':['#e6f7d6', '#56842a'],
+'ロールプレイング':['#f5eaff', '#935fc1'],
+'動画':['#f5eaff', '#935fc1'],
+'画像素材':['#eeeeee', '#777777'],
+'音楽':['#fbeeca', '#c56601'],
+'音素材':['#eeeeee', '#777777']};
 
 const search_genres = new Set();
 const include_genres = new Set();
@@ -203,6 +226,13 @@ $(document).ready(function () {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     });
+
+    // 取得資料庫資訊
+    $.getJSON("/api/info", function (data) {
+        $("#banner-text").html(data['len']);
+        $("#navbar-time").html(data['time']);
+    });
+
 
     // 在上面完成初始化 //
 
@@ -387,6 +417,7 @@ $(document).ready(function () {
             if ($("#result-container").hasClass('show')) {
                 result_Collapse.hide();
             }
+            $("#search-spinner").css("display", "flex")
             $("#footer-quote").css("display", "none")
 
             $.ajax({
@@ -409,13 +440,17 @@ $(document).ready(function () {
                 success: function (data) {
                     setTimeout(function () {
                         $('#result_list').html("");
+                        $("#search-spinner").css("display", "none")
+                        info = data.pop()
+                        $("#result-info").html("NUM1 項作品中的前 NUM2 項（搜尋時間：NUM3 秒）".replace("NUM1", info['respond_len']).replace("NUM2", info['result_len']).replace("NUM3", info['time']))
                         data.forEach(element => {
-                            var work_id = 'RJ' + element['index'].padStart(6, '0');
+                            var work_id = 'RJ' + element['index'].toString().padStart(6, '0');
                             html = result_card_template.replace('SMALL_IMG_LINK', get_img_url(element['img_url'], element['index']));
                             html = html.replace('RJID', work_id);
                             html = html.replace('GENRE_BUTTON', element['category']);
+                            html = html.replace('STYLE', 'background:'+genre_class_color_dict[element['category']][0]+'; color:'+genre_class_color_dict[element['category']][1]);
                             html = html.replace('TITLE', element['title']);
-                            html = html.replace('META', '<b>' + element['group'] + '</b>  @ ' + element['date'].slice(0,10) + '（販売数：<b>' + element['sells'] + '</b>）');
+                            html = html.replace('META', '<b>' + element['group'] + '</b>  @ ' + element['date'].slice(0, 10) + '（販売数：<b>' + element['sells'] + '</b>）');
                             html = html.replace('DESCRIPTION', element['description']);
                             html = html.replaceAll('SIMILAR', (element['similarity'] * 100).toPrecision(3));
                             var label = '';
@@ -455,7 +490,7 @@ function get_img_url(is_url, rj_id) {
     if (is_url) {
         round_rj_id = Math.ceil(rj_id / 1000) * 1000;
         round_rj_id = round_rj_id.toString().padStart(6, '0');
-        pad_rj_id = rj_id.padStart(6, '0');
+        pad_rj_id = rj_id.toString().padStart(6, '0');
         return 'https://img.dlsite.jp/resize/images2/work/doujin/RJ' + round_rj_id + '/RJ' + pad_rj_id + '_img_main_240x240.jpg';
     } else {
         return 'www.dlsite.com/images/web/home/no_img_main.gif';
