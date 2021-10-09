@@ -1,3 +1,6 @@
+## 啟動服務時只需要
+`genre.json`、`genre_vec.npy`、`works.sqlite`三個檔案。
+
 ## 資料說明
 - works_table.json: 作品的metadata
 - dates_table.json: 收集各發售日作品的時間
