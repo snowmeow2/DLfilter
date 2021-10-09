@@ -24,6 +24,15 @@
             background-color: rgb(248, 248, 248);
         }
 
+        h1 {
+            letter-spacing: 1.5px;
+        }
+
+        #banner {
+            backdrop-filter: blur(3px);
+            text-shadow: 0px 0px 5px black;
+        }
+
         /* 搜尋列 */
         #genre-container {
             padding: .25rem 0rem 0rem 0rem;
@@ -212,10 +221,69 @@
     </div>
 
     <!-- Main content -->
+
+
+
+    <div class="container-fluid"
+        style="background-image: url({{ url_for('static', path='/render3.png') }}); background-position: center; background-size:cover">
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+                <nav class="py-3 navbar navbar-expand-lg navbar-dark">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">DLfilter</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="#">Data</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://github.com/snowmeow2/DLfilter">Github</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false" disabled>
+                                        Language
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" href="#" disabled>正體中文</a></li>
+                                        <li><a class="dropdown-item" href="#" disabled>日本語</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item" href="#">佔位符</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <div class="d-flex" style="color:#FFFFFF8c">
+                                資料庫最後更新時間：<span id="navbar-time"></span> (UTC+0)
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <div class="py-5 row align-items-center justify-content-center">
+            <div class="col-auto text-center" id='banner' style="color: white; ">
+                <h1><b>DLfilter</b></h1>
+                <h5>收錄自千禧年以來的 <span id='banner-text'></span> 件作品。</h5>
+            </div>
+        </div>
+        <br>
+    </div>
+
+    <br>
+    <br>
+
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-sm-10 offset-sm-1"
-                style="background-color: white; padding: 25px 50px 0px 50px; border-radius: 0px 0px 25px 25px;">
+                style="background-color: white; padding: 25px 50px 0px 50px; border-radius: 25px;">
                 <h5 style="margin-bottom: 20px;"><b>搜尋類似作品 </b><small><i class="far fa-question-circle"
                             data-bs-toggle="tooltip" data-bs-placement="right"
                             title="您可以輸入作品編號，或直接新增標籤來開始搜尋。"></i></small></h5>
@@ -237,10 +305,16 @@
                         <!-- Categories option -->
                         <div>
                             <select class="form-select mb-2" id="category-select" style="border-radius:10px;">
-                                <option value="0" selected>未選擇類別</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                                <option value=0 selected>未選擇類別</option>
+                                <option value=1>ゲーム</option>
+                                <option value=2>マンガ</option>
+                                <option value=3>CG・イラスト</option>
+                                <option value=4>ノベル</option>
+                                <option value=5">動画</option>
+                                <option value=6>ボイス・ASMR</option>
+                                <option value=7>音楽</option>
+                                <option value=8>ツール/アクセサリ</option>
+                                <option value=9>その他</option>
                             </select>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="category-check" disabled>
@@ -424,8 +498,18 @@
         <div class="row" id='result-row'>
             <div class="col-md-10 offset-md-1 collapse" id="result-container"
                 style="background-color: white; padding: 25px 50px 50px 50px; border-radius: 25px 25px 0px 0px;">
-                <h5><b>結果</b></h5>
+                <h5 class="m-3"><b>結果 &nbsp;&nbsp;</b>
+                    <small id="result-info" style="color: #6c757d;"></small>
+                </h5>
                 <div class="row" id="result_list">
+                </div>
+            </div>
+        </div>
+
+        <div class="row py-3 justify-content-center" id="search-spinner" style="display: none;">
+            <div class="col-auto">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
         </div>
@@ -438,9 +522,6 @@
         <blockquote class="blockquote">
             <p>思九州之博大兮，豈唯是其有女？</p>
         </blockquote>
-        <figcaption class="blockquote-footer">
-            或許我們離您的理想還很遠。
-        </figcaption>
     </figure>
     <br>
     <br>
