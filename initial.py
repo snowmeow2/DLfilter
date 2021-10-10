@@ -20,7 +20,7 @@ parser.add_argument("--raw_only", action="store_true",
 args = parser.parse_args()
 
 # Create a new catalogue if not found
-if os.path.isfile(args.path+r'\works_table.json'):
+if os.path.isfile(os.path.join(args.path, 'works_table.json')):
     DL = DLsite_catalog(path=args.path)
     print('Loaded catalogue in {}.'.format(args.path))
     if args.show:
@@ -76,6 +76,6 @@ if not args.raw_only:
     df['labels'] = "#" + df['labels'].str.join('#') + "#"
     df.index = pd.to_numeric(df.index.str.replace('RJ', ''))
 
-    db = sqlite3.connect(args.path+r'\works.sqlite')
+    db = sqlite3.connect(os.path.join(args.path, 'works.sqlite'))
     df.to_sql("maniax", db, if_exists="append")
     db.close()

@@ -48,11 +48,11 @@ def works_vector(df, weights):  # 0.04s for 2700 items/
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-database_path = "database/works.sqlite"
+database_path = os.path.join("database", "works.sqlite")
 templates = Jinja2Templates(directory="templates")
 lang_set = {'jp', 'en', 'zh-tw', 'zh-cn'}
 
-GG = genre_catalog(target='', path='database/')
+GG = genre_catalog(target='', path='database')
 genre_set = set(GG.get_genre_list())
 print("Catalog loaded.")
 
