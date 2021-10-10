@@ -18,13 +18,13 @@ Filter whatever you like on DLsite.
 
 ## 自己部署服務
 ### 需求
-* numpy
-* pandas
-* beautifulsoup4
+* uvicorn
 * fastapi
 * sklearn
-* scipy
-* sqlite3
+* requests
+* pandas
+* beautifulsoup4
+* jinja2
 * ...
 
 如果你希望自己計算標籤的詞向量：
