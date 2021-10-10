@@ -13,9 +13,9 @@ class DLsite_catalog:
             self.works_table = {}
             self.dates_table = {}
         else:
-            with open(path+r'\works_table.json', 'r') as f:
+            with open(os.path.join(path, 'works_table.json'), 'r') as f:
                 self.works_table = json.load(f)
-            with open(path+r'\dates_table.json', 'r') as f:
+            with open(os.path.join(path, 'dates_table.json'), 'r') as f:
                 self.dates_table = json.load(f)
 
     def get_data_duration(self, date1, date2):
@@ -74,9 +74,9 @@ class DLsite_catalog:
         return df
     
     def save_tables(self, path):
-        with open(path+r'\works_table.json', 'w') as f:
+        with open(os.path.join(path, 'works_table.json'), 'w') as f:
             json.dump(self.works_table, f)
-        with open(path+r'\dates_table.json', 'w') as f:
+        with open(os.path.join(path, 'dates_table.json'), 'w') as f:
             json.dump(self.dates_table, f)
 
     @staticmethod
@@ -147,7 +147,7 @@ class genre_catalog:
 
             self._update_counts()
         else:
-            with open(path+r'\genre.json', 'r') as f:
+            with open(os.path.join(path, 'genre.json'), 'r') as f:
                 self.table = json.load(f)
             self.genre_class_names = set([i[1] for i in self.table.values()])
             self.load_embeddings(path)
@@ -181,7 +181,7 @@ class genre_catalog:
                 time.sleep(1)
 
     def save_genre(self, path):
-        with open(path+r'\genre.json', 'w') as f:
+        with open(os.path.join(path, 'genre.json'), 'w') as f:
             json.dump(self.table, f)
 
     def concat_genre(self, tables):
@@ -209,7 +209,7 @@ class genre_catalog:
         return class_dict
     
     def load_embeddings(self, path):
-        self.embeddings = np.load(path+r'\genre_vec.npy', allow_pickle=True)
+        self.embeddings = np.load(os.path.join(path, 'genre_vec.npy'), allow_pickle=True)
 
     def compute_embeddings(self, model, path):
         genre_list = self.get_genre_list()
@@ -222,7 +222,7 @@ class genre_catalog:
                 self.embeddings[i] = model.encode([i])[0]
 
         # self.embeddings = {k:v for k,v in zip(genre_list, model.encode(genre_list))}
-        np.save(path+r'\genre_vec.npy', self.embeddings)
+        np.save(os.path.join(path, 'genre_vec.npy'), self.embeddings)
 
     def get_weighting(self, weight_func='r_logistic'):
         if self.target == '':
