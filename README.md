@@ -15,43 +15,72 @@ Filter whatever you like on DLsite.
 * 可依照標籤人氣程度進行加權
 * 可依作品人氣與販售時間進行加權
 * (WIP) 日本語 / English
+* (WIP) 自動更新
 
 ## 自己部署服務
 ### 需求
 * uvicorn
 * fastapi
-* sklearn
-* requests
-* pandas
-* beautifulsoup4
 * jinja2
-* ...
+* beautifulsoup4
+* sklearn
+* pandas
 
-如果你希望自己計算標籤的詞向量：
-* sentence_transformers
+## 執行 `initial.py` 來初始化並更新您的作品資料庫
+前提條件：
+- Python 3
+- `pandas`
+- `sentence_transformers` （如果您希望自己計算標籤的詞向量）
 
-### 建構資料庫
+### 初始化
+您也可以直接從[這裡](https://drive.google.com/file/d/12hbh-XMiUXKKYsVh38k-8YI8AMm0S0GP/view?usp=sharing)下載預先建立好的資料庫。（收錄日期：2000-01-01 ~ 2021-09-30）
+**請注意：若您已經下載了現有的資料庫，則不需進行初始化。** 
+
+在您的專案資料夾下執行本程式以初始化資料庫。
+```
+$.../DLfilter python initial.py -i
+```
+首次執行時，程式會在 `.../DLfilter/database` 資料夾下建立以下檔案：
+- `works_table.json`: 作品的metadata
+- `dates_table.json`: 收集各發售日作品的時間
+- `genre.json`: 標籤的metadata
+- `genre_vec.npy`: 標籤的向量嵌入
+- `works.sqlite`: 作品資料庫
+
+檔案的詳細結構請參閱 `.../DLfilter/database/readme.md` 。
+
+程式會詢問您要收集的日期範圍。請依以下格式輸入您希望的一個或一段日期：
+
+`2021-01-01` 或 `2021-01-01 2021-01-31`
+
+程式會收集在這些日期發售的作品。首次執行時，需要下載語言模型以計算各標籤的向量嵌入（預設為`distiluse-base-multilingual-cased-v2`。使用`--model <NAME>`以更換為其他支援的語言模型）。
+
+### 更新資料庫
+使用 `-u` 或 `--update` 引數更新資料庫至前一日的資料：
+```
+$.../DLfilter python initial.py -u
+```
+假設今日為 `2021-03-02` ，而更新前的資料庫只收錄至 `2021-01-31` ，則此指令會新增從 `2021-02-01` 到 `2021-03-01` 期間所發售的作品至資料庫。
+
+### 進階選項
+使用 `--help` 引數來檢查可用的選項：
 ```
 $.../DLfilter python initial.py --help
-$.../DLfilter python initial.py -g --date <START_DATE> <END_DATE> 
+
+usage: initial.py [-h] (-i | -s | -u | -d DATE [DATE ...]) 
+       [--path PATH] [--model MODEL] [--no_genre] [--raw_only]
+       ...
 ```
-這會在`.../DLfilter/database/`建立從`<START_DATE>`到`<END_DATE>`發售的作品資料庫及並計算各標籤的向量嵌入。預設以`distiluse-base-multilingual-cased-v2`來計算。`--model <NAME>`以使用其他支援的語言模型。
-
-
-你也可以直接從[這裡](https://drive.google.com/file/d/12hbh-XMiUXKKYsVh38k-8YI8AMm0S0GP/view?usp=sharing)下載預先建立好的資料庫。（2000-01-01 ~ 2021-09-30）
-
 #### 更新某日的資料庫
 ```
-$.../DLfilter python initial.py --date 2021-10-01
+$.../DLfilter python initial.py -d 2021-03-01
 ```
 #### 更新某段日期的資料庫
 ```
-$.../DLfilter python initial.py --date 2021-10-01 2021-10-31
+$.../DLfilter python initial.py -d 2021-01-01 2021-03-01
 ```
-#### 自動更新
-WIP
 
-### 啟動服務
+## 啟動服務
 ```
 uvicorn sqlapp:app
 ```
