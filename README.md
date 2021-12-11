@@ -49,11 +49,11 @@ $.../DLfilter python initial.py -i
 
 檔案的詳細結構請參閱 `.../DLfilter/database/readme.md` 。
 
-程式會詢問您要收集的日期範圍。請依以下格式輸入您希望的一個或一段日期：
+程式會詢問您要收集的日期範圍。請依 `YYYY-MM-DD` 格式輸入您希望的一個或一段日期：
 
 `2021-01-01` 或 `2021-01-01 2021-01-31`
 
-程式會收集在這些日期發售的作品。首次執行時，需要下載語言模型以計算各標籤的向量嵌入（預設為`distiluse-base-multilingual-cased-v2`。使用`--model <NAME>`以更換為其他支援的語言模型）。
+程式會收集在這些日期發售的作品。首次執行時，需要下載語言模型以計算各標籤的向量嵌入（預設為`distiluse-base-multilingual-cased-v2`。使用`--model <NAME>`以更換為[其他支援的語言模型](https://www.sbert.net/docs/pretrained_models.html)）。
 
 ### 更新資料庫
 使用 `-u` 或 `--update` 引數更新資料庫至前一日的資料：
