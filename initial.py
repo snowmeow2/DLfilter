@@ -27,10 +27,10 @@ args = parser.parse_args()
 
 if args.date:
     _ = datetime.strptime(args.date[0], '%Y-%m-%d')
-    assert _ < datetime.today() and _ >= datetime(2000,1,1)
+    assert _ < datetime.today() and _ >= datetime(2000, 1, 1)
     if len(args.date) == 2:
         _2 = datetime.strptime(args.date[1], '%Y-%m-%d')
-        assert _2 < datetime.today() and _2 >= datetime(2000,1,1) and _2 > _
+        assert _2 < datetime.today() and _2 >= datetime(2000, 1, 1) and _2 > _
 
 # Find for the catalogue
 if os.path.isfile(os.path.join(args.path, 'works_table.json')):
@@ -61,17 +61,17 @@ if args.init:
             d1 = input(
                 'Please input the start date you want: YYYY-MM-DD:\n')
             _ = datetime.strptime(d1, '%Y-%m-%d')
-            assert _ < datetime.today() and _ >= datetime(2000,1,1)
+            assert _ < datetime.today() and _ >= datetime(2000, 1, 1)
             d2 = input(
                 'Please input the end date you want (optional): YYYY-MM-DD:\n')
             if d2 != '':
                 _2 = datetime.strptime(d2, '%Y-%m-%d')
-                assert _2 < datetime.today() and _2 >= datetime(2000,1,1) and _2 > _
+                assert _2 < datetime.today() and _2 >= datetime(2000, 1, 1) and _2 > _
             break
         except Exception:
             print('Error: Date format incorrect, or out of available range.')
             pass
-        
+
     if d2 == '':
         DL.get_data_one_day(d1)
     else:
