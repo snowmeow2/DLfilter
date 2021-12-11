@@ -17,28 +17,27 @@ Filter whatever you like on DLsite.
 * (WIP) 日本語 / English
 * (WIP) 自動更新
 
-## 自己部署服務
+## 部署您自己的服務
 ### 需求
-* uvicorn
-* fastapi
-* jinja2
-* beautifulsoup4
-* sklearn
-* pandas
-
-## 執行 `initial.py` 來初始化並更新您的作品資料庫
-前提條件：
 - Python 3
+- `uvicorn`
+- `fastapi`
+- `jinja2`
+- `beautifulsoup4`
 - `pandas`
+- `sklearn`
 - `sentence_transformers` （如果您希望自己計算標籤的詞向量）
 
+
+
+## 執行 `initial.py` 來初始化並更新您的作品資料庫
 ### 初始化
-您也可以直接從[這裡](https://drive.google.com/file/d/12hbh-XMiUXKKYsVh38k-8YI8AMm0S0GP/view?usp=sharing)下載預先建立好的資料庫。（收錄日期：2000-01-01 ~ 2021-09-30）
+您也可以直接從 **[這裡](https://drive.google.com/file/d/12hbh-XMiUXKKYsVh38k-8YI8AMm0S0GP/view?usp=sharing)** 下載預先建立好的資料庫（收錄日期：2000-01-01 ~ 2021-09-30）。
 **請注意：若您已經下載了現有的資料庫，則不需進行初始化。** 
 
-在您的專案資料夾下執行本程式以初始化資料庫。
+在此專案資料夾下執行該程式以初始化資料庫。
 ```
-$.../DLfilter python initial.py -i
+python initial.py -i
 ```
 首次執行時，程式會在 `.../DLfilter/database` 資料夾下建立以下檔案：
 - `works_table.json`: 作品的metadata
@@ -53,19 +52,19 @@ $.../DLfilter python initial.py -i
 
 `2021-01-01` 或 `2021-01-01 2021-01-31`
 
-程式會收集在這些日期發售的作品。首次執行時，需要下載語言模型以計算各標籤的向量嵌入（預設為`distiluse-base-multilingual-cased-v2`。使用`--model <NAME>`以更換為[其他支援的語言模型](https://www.sbert.net/docs/pretrained_models.html)）。
+程式會收集在這些日期發售的作品。首次執行時，需要下載語言模型以計算各標籤的向量嵌入（預設為`distiluse-base-multilingual-cased-v2`。使用`--model 'model_name'`以更換為[其他支援的語言模型](https://www.sbert.net/docs/pretrained_models.html)）。
 
 ### 更新資料庫
 使用 `-u` 或 `--update` 引數更新資料庫至前一日的資料：
 ```
-$.../DLfilter python initial.py -u
+python initial.py -u
 ```
 假設今日為 `2021-03-02` ，而更新前的資料庫只收錄至 `2021-01-31` ，則此指令會新增從 `2021-02-01` 到 `2021-03-01` 期間所發售的作品至資料庫。
 
 ### 進階選項
 使用 `--help` 引數來檢查可用的選項：
 ```
-$.../DLfilter python initial.py --help
+python initial.py --help
 
 usage: initial.py [-h] (-i | -s | -u | -d DATE [DATE ...]) 
        [--path PATH] [--model MODEL] [--no_genre] [--raw_only]
@@ -73,11 +72,11 @@ usage: initial.py [-h] (-i | -s | -u | -d DATE [DATE ...])
 ```
 #### 更新某日的資料庫
 ```
-$.../DLfilter python initial.py -d 2021-03-01
+python initial.py -d 2021-03-01
 ```
 #### 更新某段日期的資料庫
 ```
-$.../DLfilter python initial.py -d 2021-01-01 2021-03-01
+python initial.py -d 2021-01-01 2021-03-01
 ```
 
 ## 啟動服務
