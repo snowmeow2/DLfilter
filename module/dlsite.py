@@ -91,7 +91,7 @@ class DLsite_catalog:
 
             day_table = {}
             for work in works:
-                work_ID = re.search(r'RJ\d\d\d\d\d\d', work.find('a')['href']).group(0)
+                work_ID = re.search(r'RJ\d\d\d\d\d\d(\d\d)?', work.find('a')['href']).group(0)
                 work_dict = {}
 
                 work_dict['date'] = date

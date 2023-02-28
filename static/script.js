@@ -270,7 +270,7 @@ $(document).ready(function () {
     // 自動填入作品標籤
     $("#rjid").keyup(function () {
         var rj_id = $(this).val();
-        var re = /^RJ\d\d\d\d\d\d$/;
+        var re = /^RJ\d\d\d\d\d\d(\d\d)?$/;
         if (re.test(rj_id)) {
             $.ajax({
                 url: "/api/works",
@@ -444,7 +444,10 @@ $(document).ready(function () {
                         info = data.pop()
                         $("#result-info").html("NUM1 項作品中的前 NUM2 項（搜尋時間：NUM3 秒）".replace("NUM1", info['respond_len']).replace("NUM2", info['result_len']).replace("NUM3", info['time']))
                         data.forEach(element => {
-                            var work_id = 'RJ' + element['index'].toString().padStart(6, '0');
+                            var rj_id = element['index'].toString().padStart(6, '0');
+                            if (rj_id.length > 6)
+                                rj_id = rj_id.padStart(8, '0');
+                            var work_id = 'RJ' + rj_id;
                             html = result_card_template.replace('SMALL_IMG_LINK', get_img_url(element['img_url'], element['index']));
                             html = html.replace('RJID', work_id);
                             html = html.replace('GENRE_BUTTON', element['category']);
@@ -488,9 +491,15 @@ function topFunction() {
 
 function get_img_url(is_url, rj_id) {
     if (is_url) {
+        rj_id_s = rj_id.toString();
         round_rj_id = Math.ceil(rj_id / 1000) * 1000;
-        round_rj_id = round_rj_id.toString().padStart(6, '0');
-        pad_rj_id = rj_id.toString().padStart(6, '0');
+        if (rj_id_s.length <= 6) {
+            round_rj_id = round_rj_id.toString().padStart(6, '0');
+            pad_rj_id = rj_id.toString().padStart(6, '0');
+        } else {
+            round_rj_id = round_rj_id.toString().padStart(8, '0');
+            pad_rj_id = rj_id.toString().padStart(8, '0');
+        }
         return 'https://img.dlsite.jp/resize/images2/work/doujin/RJ' + round_rj_id + '/RJ' + pad_rj_id + '_img_main_240x240.jpg';
     } else {
         return 'www.dlsite.com/images/web/home/no_img_main.gif';
