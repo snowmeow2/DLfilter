@@ -1,0 +1,5 @@
+database/*.json
+database/*.pkl
+database/*.sqlite
+__pycache__
+*.ipynb
