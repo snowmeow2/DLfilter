@@ -55,7 +55,7 @@ class DLsite_catalog:
         dates.sort()
         if len(dates) < 2:
             print(dates)
-            return
+            return datetime.strptime(i, '%Y-%m-%d')
 
         temp = dates[0]
         for i, j in zip(dates[:-1], dates[1:]):
@@ -68,6 +68,7 @@ class DLsite_catalog:
         if j != temp:
             print('{} = {}'.format(temp.strftime("%Y-%m-%d"), j.strftime("%Y-%m-%d")))
         else: print(j.strftime("%Y-%m-%d"))
+        return j.strftime("%Y-%m-%d")
 
     def to_dataframe(self):
         df = pd.DataFrame.from_dict(self.works_table).T
@@ -90,7 +91,7 @@ class DLsite_catalog:
 
             day_table = {}
             for work in works:
-                work_ID = re.search(r'RJ\d\d\d\d\d\d', work.find('a')['href']).group(0)
+                work_ID = re.search(r'RJ\d\d\d\d\d\d(\d\d)?', work.find('a')['href']).group(0)
                 work_dict = {}
 
                 work_dict['date'] = date
@@ -153,29 +154,26 @@ class genre_catalog:
             self.load_embeddings(path)
 
     def _update_counts(self):
-        url = 'https://www.dlsite.com/{}/api/fs/summary/workcount'.format(self.target)
-        fs_url = 'https://www.dlsite.com/{}/fs'.format(self.target)
+        url = 'https://www.dlsite.com/{}/genre/list'.format(self.target)
 
         while True:
             try:
-                genre_json = requests.get(url).json()['genre_work_count_list']
-                genre_id_dict = {i['genre_value']:i['work_count'] for i in genre_json}
-                
-                req = Request(url=fs_url, headers=headers)
+                req = Request(url=url, headers=headers)
                 html = urlopen(req).read()
                 soup = BeautifulSoup(html, "html.parser")
-
-                jyanru = soup.find_all('div', class_='switchDetail_l')[1]
-                genre_classes = jyanru.find_all('div', class_='frame_double_list_box_inner')
-                for genre_class in genre_classes:
-                    genre_class_name = genre_class.find('span').text
-                    self.genre_class_names.add(genre_class_name)
-                    genres = genre_class.find_all('label')
-                    for genre in genres:
-                        genre_id = genre['for'][-3:]
-                        self.table[genre_id] = [genre.text, genre_class_name, int(genre_id_dict[genre_id])]
+                for genre_class in soup.find_all('h2', class_='versatility_linklist_title'):
+                    genre_class_name = genre_class.text
+                    genre_ul = genre_class.find_next_sibling('ul')
+                    for genre in genre_ul.find_all('li'):
+                        genre_a = genre.find('a')
+                        # https://www.dlsite.com/home/works/genre/=/genre/{genre_id}
+                        genre_id = genre_a['href'][48:]
+                        genre_name_count = genre_a.text
+                        m = re.search(r'(.+)\((.+)\)', genre_name_count)
+                        genre_name = m.group(1)
+                        genre_count = m.group(2).replace(',', '')
+                        self.table[genre_id] = [genre_name, genre_class_name, int(genre_count)]
                 break
-
             except Exception as e:
                 print(e)
                 time.sleep(1)

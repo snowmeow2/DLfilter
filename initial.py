@@ -132,7 +132,7 @@ if not args.raw_only or args.init:
     df['rating'] = df['rating'].astype(float)
     df['for_age'] = df['for_age'].astype(int)
     df['for_sex'] = df['for_sex'].astype(int)
-    df['img_url'] = df['img_url'].str.contains(r'RJ\d\d\d\d\d\d_')
+    df['img_url'] = df['img_url'].str.contains(r'RJ\d\d\d\d\d\d(\d\d)?_')
     df['labels'] = "#" + df['labels'].str.join('#') + "#"
     df.index = pd.to_numeric(df.index.str.replace('RJ', ''))
 

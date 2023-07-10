@@ -85,7 +85,7 @@ def get_genres(lang: str):
 
 
 @app.get('/api/works')
-def get_works(rj_id: str = Query(..., regex=r"^RJ\d\d\d\d\d\d$")):
+def get_works(rj_id: str = Query(..., regex=r"^RJ\d\d\d\d\d\d(\d\d)?$")):
     db = sqlite3.connect(database_path)
     content = pd.read_sql_query(
         "SELECT * FROM maniax WHERE [index] == "+rj_id[2:], db)
@@ -103,7 +103,7 @@ def get_works(rj_id: str = Query(..., regex=r"^RJ\d\d\d\d\d\d$")):
 @app.get('/api/similarity')
 def get_similar_works(
     genres: str,
-    rj_id: Optional[str] = Query(None, regex=r"^RJ\d\d\d\d\d\d$"),
+    rj_id: Optional[str] = Query(None, regex=r"^RJ\d\d\d\d\d\d(\d\d)?$"),
     weight_func: int = Query(1, ge=1, le=4),
     popular: int = Query(50, ge=0, le=100),
     date: int = Query(0, ge=0, le=100),
