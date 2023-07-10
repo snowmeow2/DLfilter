@@ -1,0 +1,6 @@
+uvicorn
+fastapi
+Jinja2
+beautifulsoup4
+pandas
+sentence-transformers

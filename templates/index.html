@@ -1,496 +1,165 @@
 <!doctype html>
-<html lang="zh-tw">
+<html lang="en" data-bs-theme="light">
 
 <head>
+    <title>DLfilter</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap & jQuery -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"
+        type="text/css">
+    <!-- Bootstrap CSS v5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
         crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', path='/script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+        crossorigin="anonymous"></script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP:light');
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', path='/localisation.js') }}"></script>
+    <script src="{{ url_for('static', path='/template.js') }}"></script>
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+    <script type="module" defer>
+        import { polyfillCountryFlagEmojis } from "https://cdn.skypack.dev/country-flag-emoji-polyfill";
+        polyfillCountryFlagEmojis();
+    </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP');
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: var(--bs-border-color);
+            border: 4px solid var(--bs-body-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--bs-tertiary-color);
+            border-radius: 20px;
+            border: 3px solid var(--bs-body-bg);
+            transition: all 0.3s ease-in-out;
+        }
+
+        #result-panel::-webkit-scrollbar-track {
+            border: 4px solid var(--bs-tertiary-bg);
+        }
+
+        #result-panel::-webkit-scrollbar-thumb {
+            border: 3px solid var(--bs-tertiary-bg);
+        }
 
         body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: rgb(248, 248, 248);
-        }
-
-        h1 {
-            letter-spacing: 1.5px;
-        }
-
-        #banner {
-            backdrop-filter: blur(3px);
-            text-shadow: 0px 0px 5px black;
-        }
-
-        /* 搜尋列 */
-        #genre-container {
-            padding: .25rem 0rem 0rem 0rem;
-            border-left-color: #ffffff00;
-            border-right-color: #ffffff00;
-            border-top-right-radius: 0px;
-            border-bottom-right-radius: 0px;
-            color: #6c757d;
-        }
-
-        /* 作品名提示 */
-        #work-tip {
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        /* 搜尋列左側按鈕 */
-        .btn-left {
-            border-radius: 10px 0px 0px 10px;
-        }
-
-        /* 搜尋列右側按鈕 */
-        .btn-right {
-            border-radius: 0px 10px 10px 0px;
-        }
-
-        /* 搜尋列內按鈕 */
-        .btn-inline {
-            border-top-color: #ced4da;
-            border-bottom-color: #ced4da;
-            border-left-color: #ffffff00;
-            border-right-color: #ffffff00;
-            color: #6c757d;
-
-        }
-
-        /* 列表展開按鈕 */
-        .btn-expand {
-            color: black;
-        }
-
-        /* 標籤列表開啟按鈕 */
-        .btn-add-genre {
-            color: black;
-            border-width: 1px;
-            border-color: #ced4da;
-            border-radius: 10px;
-            font-size: .875em;
-        }
-
-        .btn-add-genre:hover {
-            background-color: rgb(248, 248, 248);
-        }
-
-        /* 單選按鈕 */
-        .btn-radio {
-            border-radius: 10px;
-        }
-
-        .img-radio {
-            border-width: 0px;
-            background-color: rgb(248, 248, 248);
-        }
-
-        /* 表單用的標籤按鈕 */
-        .label {
-            border-radius: 7px;
-            padding: 3px 7px 3px 7px;
-            margin: 0px 2px 2px 0px;
-            font-size: .875em;
-        }
-
-        .label:hover {
-            cursor: default;
-        }
-
-
-
-
-        /* 結果卡上的作品標籤 */
-        .genre-label {
-            border-radius: 7px;
-            margin-bottom: 5px;
-            padding: 3px 10px 3px 10px;
-        }
-
-        .genre-label:hover {
-            cursor: default;
-        }
-
-        .card {
-            margin: 5px 0px 5px 0px;
-            border-radius: 8px;
-            transition: all 0.15s ease-in-out;
-        }
-
-        .card:hover {
-            box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
-        }
-
-        .card-img {
-            border-radius: 10px;
+            font-family: "Noto Sans JP", sans-serif;
+            background-color: var(--bs-tertiary-bg);
         }
 
         .badge {
-            font-size: 9.5pt;
-            background-color: rgb(87, 115, 151);
-            margin-right: 4px;
+            font-family: "Twemoji Country Flags", "Noto Sans JP", sans-serif;
         }
 
-        .progress {
-            background-color: rgb(248, 248, 248);
+        img {
+            width: 100%;
+            object-fit: cover;
         }
 
-        .progress-bar {
-            background-color: #ced4da;
-            color: black;
-            border-width: 1px;
+        hr {
+            border-color: var(--bs-tertiary-color);
         }
 
-        /* 令 modal 內部可以捲動 */
-        .modal-dialog {
-            overflow-y: initial !important
-        }
-
-        .modal-body {
-            max-height: calc(100vh - 300px);
-            overflow-y: auto;
-        }
-
-        /*  */
-        #myBtn {
-            display: none;
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 99;
-            border: none;
-            /* Remove borders */
-            outline: none;
-            /* Remove outline */
-            color: white;
-            /* Text color */
-            padding: 15px;
-            /* Some padding */
-            border-radius: 8px;
-            /* Rounded corners */
-            font-size: 18px;
-            /* Increase font size */
+        h5>.fa-solid,
+        h5>.fa-regular,
+        h6>.fa-solid {
+            color: var(--bs-secondary-color);
+            transition: all 0.2s ease-in-out;
         }
     </style>
-
-    <title>DLfilter</title>
-    <meta content="DLfilter" property="og:title" />
-    <meta content="Filter whatever you like on DLsite." property="og:description" />
-    <meta content="http://www.dlfilter.moe" property="og:url" />
-    <meta content="#8668a8" data-react-helmet="true" name="theme-color" />
 </head>
 
 <body>
-    <!-- Back to top -->
-    <button onclick="topFunction()" id="myBtn" title="Go to top" class="btn bg-danger">TOP</i></button>
-
-    <!-- Genres Modal -->
-    <div class="modal fade" id="genre-select-Modal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="Genre-ModalLabel"><b><i class="fas fa-tags"></i> 標籤列表</b></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <input class="form-control" placeholder="計畫中" disabled style="display: none;">
-                        <div class="text-center">
-                            <p id="modal-desc"></p>
-                            <div id="modal-main-container">
-                            </div>
-                        </div>
+    <header>
+        <!-- place header here -->
+    </header>
+    <main>
+        <!-- Genre Modal -->
+        <div class="modal fade" id="genre-modal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-lg-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 px-2" id="genre-modal-title">Search Genres</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-                <div class="modal-body" id="genre-form" data-genres="">
-
-                </div>
-                <div class="modal-footer">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main content -->
-
-
-
-    <div class="container-fluid"
-        style="background-image: url({{ url_for('static', path='/render3.png') }}); background-position: center; background-size:cover">
-        <div class="row">
-            <div class="col-sm-10 offset-sm-1">
-                <nav class="py-3 navbar navbar-expand-lg navbar-dark">
-                    <div class="container-fluid">
-                        <a class="navbar-brand" href="#">DLfilter</a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li class="nav-item">
-                                    <a class="nav-link" aria-current="page" href="#">Data</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="https://github.com/snowmeow2/DLfilter" target="_blank">Github</a>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false" disabled>
-                                        Language
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item" href="#" disabled>正體中文</a></li>
-                                        <li><a class="dropdown-item" href="#" disabled>日本語</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item" href="#">佔位符</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <div class="d-flex" style="color:#FFFFFF8c">
-                                snowmeow2@Latest update:&nbsp;<span id="navbar-time"></span>&nbsp;(UTC+0)
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </div>
-
-        <div class="py-5 row align-items-center justify-content-center">
-            <div class="col-auto text-center" id='banner' style="color: white; ">
-                <h1><b>DLfilter</b></h1>
-                <h5>收錄自千禧年以來的 <span id='banner-text'></span> 件作品。</h5>
-            </div>
-        </div>
-        <br>
-    </div>
-
-    <br>
-    <br>
-
-    <div class="container-fluid">
-        <div class="row mb-4">
-            <div class="col-sm-10 offset-sm-1"
-                style="background-color: white; padding: 25px 50px 0px 50px; border-radius: 25px;">
-                <h5 style="margin-bottom: 20px;"><b>搜尋類似作品 </b><small><i class="far fa-question-circle"
-                            data-bs-toggle="tooltip" data-bs-placement="right"
-                            title="您可以輸入作品編號，或直接新增標籤來開始搜尋。"></i></small></h5>
-
-                <!-- Search forms -->
-                <div class="row">
-                    <div class="form-group col-md-3 mb-3">
-                        <!-- Work ID -->
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="rjid" placeholder="RJ123456" value=""
-                                style="border-radius: 10px; padding-left: 1rem;">
-                        </div>
-
-                        <!-- Error msg goes here -->
-                        <div id="work-tip-container" class="row collapse">
-                            <p id="work-tip" class="text-center"></p>
-                        </div>
-
-                        <!-- Categories option -->
-                        <div>
-                            <select class="form-select mb-2" id="category-select" style="border-radius:10px;">
-                                <option value=0 selected>未選擇類別</option>
-                                <option value=1>ゲーム</option>
-                                <option value=2>マンガ</option>
-                                <option value=3>CG・イラスト</option>
-                                <option value=4>ノベル</option>
-                                <option value=5>動画</option>
-                                <option value=6>ボイス・ASMR</option>
-                                <option value=7>音楽</option>
-                                <option value=8>ツール/アクセサリ</option>
-                                <option value=9>その他</option>
-                            </select>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="category-check" disabled>
-                                <label class="form-check-label" for="category-check">
-                                    只搜尋同類別作品
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group col-md-9 mb-3">
-                        <!-- Search bar -->
-                        <div class="input-group mb-3">
-                            <button type="button" class='btn btn-outline-primary btn-left' data-bs-toggle="modal"
-                                data-bs-target="#genre-select-Modal" data-genres="Add"><i
-                                    class="fas fa-plus"></i></button>
-                            <button type="button" class='btn btn-inline' data-bs-toggle="collapse"
-                                data-bs-target=".multi-collapse"><i class="fas fa-sliders-h"></i></button>
-                            <div id="genre-container" class="form-control">
-                                <small id="genre-container-tip">這裡會出現您所選擇的標籤</small>
-                            </div>
-                            <button type="button" class='btn btn-inline' id="btn-delall"><i
-                                    class="fas fa-times"></i></button>
-                            <button type="button" class='btn btn-primary btn-right btn-search'><i
-                                    class="fas fa-search"></i></button>
-                        </div>
-
-                        <!-- Error msg goes here -->
-                        <div id="input-tip-container" class="row collapse">
-                            <p id="input-tip" class="text-center"></p>
-                        </div>
-
-                        <!-- In/Excluded genres -->
-                        <div class="row mb-1 mx-auto align-items-center">
-                            <button class="btn btn-add-genre col-auto mt-1" data-bs-toggle="modal"
-                                data-bs-target="#genre-select-Modal" data-genres="Included"><i class="fas fa-plus"></i>
-                                包含標籤</button>
-                            <div class="col-auto mt-1" id="included-container">
-                                <small id="included-tip" style='color: #6c757d; border-bottom: 2px dotted #6c757d;'
-                                    data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                                    title="當您已經確定作品一定要包含某些標籤時。例如，您可能希望搜尋到的<u>校園類型</u>作品，要有<u>眼鏡</u>的標籤。">什麼時候需要強制包含標籤？</small>
-                            </div>
-                        </div>
-                        <div class="row mb-1 mx-auto align-items-center">
-                            <button class="btn btn-add-genre col-auto mt-1" data-bs-toggle="modal"
-                                data-bs-target="#genre-select-Modal" data-genres="Excluded"><i class="fas fa-minus"></i>
-                                排除標籤</button>
-                            <div class="col-auto mt-1" id="excluded-container">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Advance option -->
-                <div id="detail-opt" class="collapse  mb-4 multi-collapse">
-                    <p><b><i class="fas fa-sliders-h"></i> 進階搜尋選項</b></p>
-                    <!-- Slider -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="popular-range" class="form-label">依作品人氣加權</label>
-                            <input type="range" class="form-range" id="popular-range">
-                            <div class="row  justify-content-between">
-                                <div class="col-sm-auto" style="margin-top: -10px; margin-left: 2px; color: #6c757d;">
-                                    <small>熱門</small>
-                                </div>
-                                <div class="col-sm-auto" style="margin-top: 0px;">
-                                    <p id="popular-tip">不加權</p>
-                                </div>
-                                <div class="col-sm-auto" style="margin-top: -10px; margin-right: 2px; color: #6c757d;">
-                                    <small>冷門</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="date-range" class="form-label">依上市時間篩選</label>
-                            <input type="range" class="form-range" id="date-range" value=0>
-                            <div class="row  justify-content-between">
-                                <div class="col-sm-auto" style="margin-top: -10px; margin-left: 2px; color: #6c757d;">
-                                    <small>較舊</small>
-                                </div>
-                                <div class="col-sm-auto" style="margin-top: 0px;">
-                                    <p id="date-tip">不篩選</p>
-                                </div>
-                                <div class="col-sm-auto" style="margin-top: -10px; margin-right: 2px; color: #6c757d;">
-                                    <small>較新</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row align-items-center mt-3">
-                        <div class="col-md-6">
-                            <p>標籤加權函數</p>
-                            <div class="row text-center">
-                                <div class="col-lg-3 col-sm-6 mb-3">
-                                    <label for="option1"><img class="img-thumbnail img-radio"
-                                            src="{{ url_for('static', path='/r_logistic.png') }}"></label>
-                                    <input type="radio" class="btn-check" name="weight-func" id="option1" value=1;
-                                        autocomplete="off" checked>
-                                    <label class="btn btn-outline-primary btn-radio" for="option1">邏輯函數 <small><i
-                                                class="far fa-question-circle" data-bs-toggle="tooltip"
-                                                title=" 降低熱門標籤的權重以更好地分辨作品特性。"></i></small></label>
-                                </div>
-                                <div class="col-lg-3 col-sm-6 mb-3">
-                                    <label for="option2"><img class="img-thumbnail img-radio"
-                                            src="{{ url_for('static', path='/logistic.png') }}"></label>
-                                    <input type="radio" class="btn-check" name="weight-func" id="option2" value=2;
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-primary btn-radio" for="option2">反轉邏輯函數 <small><i
-                                                class="far fa-question-circle" data-bs-toggle="tooltip"
-                                                title="降低冷門標籤的權重以排除離群值。"></i></small></label>
-                                </div>
-                                <div class="col-lg-3 col-sm-6 mb-3">
-                                    <label for="option3"><img class="img-thumbnail img-radio"
-                                            src="{{ url_for('static', path='/gaussian.png') }}"></label>
-                                    <input type="radio" class="btn-check" name="weight-func" id="option3" value=3;
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-primary btn-radio" for="option3">常態分佈函數 <small><i
-                                                class="far fa-question-circle" data-bs-toggle="tooltip"
-                                                title="同時降低熱門跟冷門標籤的權重。這究竟有什麼用呢？"></i></small></label>
-                                </div>
-                                <div class="col-lg-3 col-sm-6 mb-3">
-                                    <label for="option4"><img class="img-thumbnail img-radio"
-                                            src="{{ url_for('static', path='/linear.png') }}"></label>
-                                    <input type="radio" class="btn-check" name="weight-func" id="option4" value=4;
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-primary btn-radio" for="option4">單調函數 <small><i
-                                                class="far fa-question-circle" data-bs-toggle="tooltip"
-                                                title="不依照標籤熱門度進行加權。最保守的選擇。"></i></small></label>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="row justify-content-around">
-
-                                <!-- Checkboxs -->
-                                <div class="col-auto align-items-center mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="all-age-check">
-                                        <label class="form-check-label" for="all-age-check">
-                                            搜尋全年齡作品 <small><i class="far fa-question-circle" data-bs-toggle="tooltip"
-                                                    data-bs-placement="right" title=" 這會排除 R-18 作品。"></i></small>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="r15-check">
-                                        <label class="form-check-label" for="r15-check">
-                                            包括 R-15 作品
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="low-rate-check" checked>
-                                        <label class="form-check-label" for="low-rate-check">
-                                            排除較低評價 / 無評價的作品
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="interest-check" checked
-                                            disabled>
-                                        <label class="form-check-label" for="interest-check">
-                                            排除已關注的作品
-                                        </label>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="row px-2 gy-3">
+                                <nav class="nav nav-justified flex-md-row flex-column shadow-sm border rounded-3 small"
+                                    id="category-link-nav">
+                                </nav>
+                                <input class="form-control focus-ring" type="text"
+                                    placeholder="What genres are you looking for?" id="genre-search-bar">
+                                <div>
+                                    <div class="row align-items-center">
+                                        <div class="col-11 border-end">
+                                            <div id="modal-desc" class="mb-2">Description of the modal.</div>
+                                            <div id="selected-genre-container">Placeholder for selected genres.
+                                            </div>
+                                        </div>
+                                        <div class="col-1">
+                                            <button type="button"
+                                                class="btn btn-danger rounded-pill shadow-sm btn-genre"
+                                                id="btn-genre-clear"><i class="fa-solid fa-trash"></i></button>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Search button -->
-                                <div class="col-auto align-self-end">
-                                    <button class="btn btn-primary btn-lg btn-search"
-                                        style="padding-left: 30px;padding-right: 30px;"><i class="fas fa-search"></i>
-                                        搜尋</button>
+                                <div id="genre-container">
+                                    <div class="category-container row p-2 mb-3 me-1 border rounded-3">
+                                        <p><b>Category name</b></p>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault-1">
+                                            <label class="form-check-label" for="flexCheckDefault-1">
+                                                Genre 1
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault-2">
+                                            <label class="form-check-label text-small" for="flexCheckDefault-2">
+                                                Genre 2
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault-3">
+                                            <label class="form-check-label text-small" for="flexCheckDefault-3">
+                                                Genre 3
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault-4">
+                                            <label class="form-check-label" for="flexCheckDefault-4">
+                                                Genre 4
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault-5">
+                                            <label class="form-check-label text-small" for="flexCheckDefault-5">
+                                                Genre 5
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault-6">
+                                            <label class="form-check-label text-small" for="flexCheckDefault-6">
+                                                Genre 6
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -499,36 +168,761 @@
             </div>
         </div>
 
-        <div class="row" id='result-row'>
-            <div class="col-md-10 offset-md-1 collapse" id="result-container"
-                style="background-color: white; padding: 25px 50px 50px 50px; border-radius: 25px 25px 0px 0px;">
-                <h5 class="m-3"><b>結果 &nbsp;&nbsp;</b>
-                    <small id="result-info" style="color: #6c757d;"></small>
-                </h5>
-                <div class="row" id="result_list">
+        <!-- Category Modal -->
+        <div class="modal fade" id="workformat-modal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-lg-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 px-2" id="workformat-modal-title">Work types</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="row px-2 gy-3">
+                                <nav class="nav nav-justified flex-md-row flex-column shadow-sm border rounded-3 small"
+                                    id="categories-link-nav">
+                                </nav>
+                                <div id="categories-container">
+                                    <div class="category-container row p-2 mb-3 me-1 border rounded-3">
+                                        <div class="form-chec">
+                                            <!-- <div > -->
+                                            <input class="form-check-input me-1" type="checkbox" id="flexCheckDefault">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                                <p><b>Default</b></p>
+                                            </label>
+                                            <!-- </div> -->
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                                Default
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                                            <label class="form-check-label text-small" for="flexCheckDefault">
+                                                Default
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                                            <label class="form-check-label text-small" for="flexCheckDefault">
+                                                Default
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                                Default
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                                            <label class="form-check-label text-small" for="flexCheckDefault">
+                                                Default
+                                            </label>
+                                        </div>
+                                        <div class="col-4 form-check">
+                                            <input class="form-check-input" type="checkbox" id="flexCheckDefault">
+                                            <label class="form-check-label text-small" for="flexCheckDefault">
+                                                Default
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="row py-3 justify-content-center" id="search-spinner" style="display: none;">
-            <div class="col-auto">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+        <!-- Go top -->
+        <div id="side-btn-container" style="display: none;">
+            <a id="clear-btn" class="btn btn-danger btn-circle rounded-circle shadow-sm" href="#" role="button"><i
+                    class="fa-solid fa-broom"></i></a>
+            <a id="go-top-btn" class="btn btn-primary btn-circle rounded-circle shadow-sm" href="#" role="button"><i
+                    class="fa-solid fa-chevron-up"></i></a>
+            <a id="expand-btn" class="btn btn-primary btn-circle rounded-circle shadow-sm" href="#" role="button"
+                data-action="open"><i class="fa-regular fa-envelope"></i></a>
+        </div>
+
+        <!-- main content -->
+        <div class="container-fluid">
+            <div class="row align-items-center mx-1" id="search-panel-container">
+                <!-- search panel -->
+                <div class="col-md-3 p-3 shadow-sm rounded-3" id="search-panel">
+                    <!-- upper part -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h4 style="text-align: center; margin-bottom: 15px;"><b id="search-title">Search</b> <a
+                                    class="btn btn-outline-dark" id="dark-toggle"><i class="fa-solid fa-moon"></i>
+                                </a></h4>
+                            <input id="rjid" type="text" class="form-control focus-ring"
+                                placeholder="What is the RJ number of your favourite work?" value="">
+                            <div id="rjid-work-name" class="form-text text-center">
+                                Add genres by work ID
+                            </div>
+                        </div>
+                    </div>
+                    <!-- lower part -->
+                    <div id="search-terms-container">
+                        <!-- container for genres -->
+                        <div class="row">
+                            <div class="col mb-2 mt-2">
+                                <h5><i class="fa-solid fa-tags"></i> <span id="genre-title">Genres</span> <a
+                                        class="btn btn-outline-primary btn-add rounded-pill" role="button"
+                                        id="genre-add-btn" data-bs-toggle="modal" data-bs-target="#genre-modal"
+                                        data-genre-action="add"><i class="fa-solid fa-plus"></i></a></h5>
+                                <div id="genre-add-container"></div>
+                                <div id="genre-add-container-hint"
+                                    class="form-text focus-ring focus-ring-danger rounded-2" tabindex="-1">Select
+                                    at least one genre.</div>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="collapse" id="collapse-genres-container">
+                            <div class="row">
+                                <div class="col mb-2">
+                                    <h6><i class="fa-solid fa-filter"></i> <span id="included-genre-title">Included
+                                            genres</span> <a class="btn btn-outline-success btn-add rounded-pill"
+                                            role="button" data-bs-toggle="modal" data-bs-target="#genre-modal"
+                                            data-genre-action="included"><i class="fa-solid fa-plus"></i></a></h6>
+                                    <div id="genre-included-container"></div>
+                                    <div id="genre-included-container-hint" class="form-text">Not selected.</div>
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col mb-2">
+                                    <h6><i class="fa-solid fa-filter-circle-xmark"></i> <span
+                                            id="excluded-genre-title">Excluded genres</span> <a
+                                            class="btn btn-outline-danger btn-add rounded-pill" role="button"
+                                            data-bs-toggle="modal" data-bs-target="#genre-modal"
+                                            data-genre-action="excluded"><i class="fa-solid fa-plus"></i></a></h6>
+                                    <div id="genre-excluded-container"></div>
+                                    <div id="genre-excluded-container-hint" class="form-text">Not selected.</div>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- container for categories -->
+                        <div class="row">
+                            <div class="col">
+                                <h5><i class="fa-solid fa-box-archive"></i> <span id="workformat-title">Work
+                                        types</span>
+                                    <a class="btn btn-outline-primary btn-add rounded-pill" role="button"
+                                        data-bs-toggle="modal" data-bs-target="#workformat-modal"><i
+                                            class="fa-solid fa-plus"></i></a>
+                                </h5>
+                                <div id="workformat-add-container"></div>
+                                <div id="workformat-add-container-hint"
+                                    class="form-text focus-ring focus-ring-danger rounded-2" tabindex="-1">Select
+                                    at least one category.</div>
+                                <hr>
+                            </div>
+                        </div>
+                        <!-- container for weights and advanced options -->
+                        <div class="form-check form-switch form-check-reverse mx-2 mb-2">
+                            <input class="form-check-input" type="checkbox" id="advanced-panel-switch"
+                                data-bs-toggle="collapse" data-bs-target="#advanced-options-panel">
+                            <label class="form-check-label" for="advanced-panel-switch"
+                                id="advanced-panel-switch-label">Show advanced options</label>
+                        </div>
+                        <div class="collapse" id="advanced-options-panel">
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <h5><i class="fa-solid fa-scale-unbalanced-flip"></i> <span
+                                            id="genre-weight-title">Genre
+                                            weight</span></h5>
+                                    <select class="form-select mb-2" id="genre-weight-select">
+                                        <option value="4" id="genre-weight-option-1">No weight</option>
+                                        <option value="1" id="genre-weight-option-2">Lower the weight of popular genres
+                                        </option>
+                                        <option value="2" id="genre-weight-option-3">Lower the weight of unpopular
+                                            genres</option>
+                                        <option value="3" id="genre-weight-option-4">Lower the weight of popular genres
+                                            and unpopular genres</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <h5><i class="fa-solid fa-calendar-days"></i> <span id="date-range-title">Release
+                                            date</span>
+                                        <a class="btn btn-outline-primary btn-add rounded-pill" role="button"
+                                            id="date-reset-btn"><i class="fa-solid fa-arrow-rotate-left"></i></a>
+                                    </h5>
+                                    <label for="date-range" class="form-label form-text" id="date-range-label">-</label>
+                                    <input type="range" class="form-range" id="date-range" min="0" max="100" value="5">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <h5><i class="fa-solid fa-arrow-trend-up"></i> <span
+                                            id="dlcount-range-title">Download count</span>
+                                        <a class="btn btn-outline-primary btn-add rounded-pill" role="button"
+                                            id="dlcount-reset-btn"><i class="fa-solid fa-arrow-rotate-left"></i></a>
+                                    </h5>
+                                    <label for="dlcount-range" class="form-label form-text row justify-content-between">
+                                        <div class="col-12" id="dlcount-range-label-0">Changing the value may yield poor
+                                            search results.</div>
+                                        <div class="col-6" id="dlcount-range-label-1">Lower</div>
+                                        <div class="col-6 text-end" id="dlcount-range-label-2">Higher</div>
+                                    </label>
+                                    <input type="range" class="form-range" id="dlcount-range" min="0" max="100"
+                                        step="10" value="50">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <h5><i class="fa-solid fa-people-roof"></i> <span id="age-title">Age</span></h5>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="age-checkbox-1">
+                                        <label class="form-check-label" id="age-checkbox-1-label" for="age-checkbox-1">
+                                            All ages
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="age-checkbox-2">
+                                        <label class="form-check-label" id="age-checkbox-2-label" for="age-checkbox-2">
+                                            R-rated
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="age-checkbox-3" checked>
+                                        <label class="form-check-label" id="age-checkbox-3-label" for="age-checkbox-3">
+                                            Adult
+                                        </label>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <h5><i class="fa-solid fa-trash"></i> <span id="misc-title">Excluded contents</span>
+                                    </h5>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="misc-checkbox-1" checked>
+                                        <label class="form-check-label" id="misc-checkbox-1-label"
+                                            for="misc-checkbox-1">
+                                            Low-rated works
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="misc-checkbox-2" checked>
+                                        <label class="form-check-label" id="misc-checkbox-2-label"
+                                            for="misc-checkbox-2">
+                                            AI-generated works
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="misc-checkbox-3" checked>
+                                        <label class="form-check-label" id="misc-checkbox-3-label"
+                                            for="misc-checkbox-3">
+                                            Partially AI-generated works
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="misc-checkbox-4" checked>
+                                        <label class="form-check-label" id="misc-checkbox-4-label"
+                                            for="misc-checkbox-4">
+                                            Guro works
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="misc-checkbox-5" checked>
+                                        <label class="form-check-label" id="misc-checkbox-5-label"
+                                            for="misc-checkbox-5">
+                                            Gay works
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pt-2">
+                        <div class="d-grid gap-2">
+                            <button type="button" id="search-btn" class="btn btn-primary"><i
+                                    class="fa-solid fa-magnifying-glass"></i> <span
+                                    id="search-btn-label">Search</span></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- result panel -->
+                <div class="col-md-9 p-3" id="result-panel">
+                    <div id="carousel-container" class="collapse show">
+                        <div id="carouselId"
+                            class="carousel carousel-light carousel-fade slide shadow-sm d-md-block d-none">
+                            <div class="carousel-indicators">
+                                <button type="button" data-bs-target="#carousel-item-1" data-bs-slide-to="0"
+                                    aria-label="Slide 1"></button>
+                                <button type="button" data-bs-target="#carousel-item-2" data-bs-slide-to="1"
+                                    aria-label="Slide 2"></button>
+                                <button type="button" data-bs-target="#carousel-item-3" data-bs-slide-to="2"
+                                    class="active" aria-current="true" aria-label="Slide 3"></button>
+                                <button type="button" data-bs-target="#carousel-item-4" data-bs-slide-to="3"
+                                    aria-label="Slide 4"></button>
+                                <button type="button" data-bs-target="#carousel-item-5" data-bs-slide-to="4"
+                                    aria-label="Slide 5"></button>
+                            </div>
+                            <div class="carousel-inner rounded-3" role="listbox">
+                                <div class="carousel-item">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Peter_Paul_Rubens_-_The_Judgement_of_Paris%2C_c.1606_%28Museo_del_Prado%29.jpg/1280px-Peter_Paul_Rubens_-_The_Judgement_of_Paris%2C_c.1606_%28Museo_del_Prado%29.jpg"
+                                        class="w-100 d-block" alt="First slide">
+                                    <div class="carousel-caption d-none d-md-block">
+                                        <!-- <h3>Title</h3> -->
+                                        <p>Where beauty ascends, death descends.</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/John_Everett_Millais_-_Ophelia_-_Google_Art_Project.jpg/1280px-John_Everett_Millais_-_Ophelia_-_Google_Art_Project.jpg"
+                                        class="w-100 d-block" alt="Second slide">
+                                    <div class="carousel-caption d-none d-md-block">
+                                        <!-- <h3>Title</h3> -->
+                                        <p>Be thou as chaste as ice, as pure as snow, thou shalt not escape calumny.</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item active">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Edgar_Germain_Hilaire_Degas_004.jpg/1280px-Edgar_Germain_Hilaire_Degas_004.jpg"
+                                        class="w-100 d-block" alt="Third slide">
+                                    <div class="carousel-caption d-none d-md-block">
+                                        <!-- <h3>Title</h3> -->
+                                        <p>So sweet was my everyday life that her departure dreaded so much.</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Paul_Gauguin_-_D%27ou_venons-nous.jpg/1280px-Paul_Gauguin_-_D%27ou_venons-nous.jpg"
+                                        class="w-100 d-block" alt="Fourth slide">
+                                    <div class="carousel-caption d-none d-md-block">
+                                        <!-- <h3>Title</h3> -->
+                                        <p>Where Do We Come From? What Are We? Where Are We Going?</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/a/a7/Matissedance.jpg"
+                                        class="w-100 d-block" alt="Fifth slide">
+                                    <div class="carousel-caption d-none d-md-block">
+                                        <!-- <h3>Title</h3> -->
+                                        <p>A primitive, primitive animal that desires connection.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselId"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselId"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row m-4">
+                        <div class="alert alert-light alert-dismissible" role="alert">
+                            <div id="welcome-top-alert">
+                                🚧 <b>DLfilter is still under construction!</b> 🚧<br>Features may be missing. Don't
+                                worry, I am still working on it!
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <div class="border-start border-4 px-4 pt-2">
+                            <h2><b id="welcome-title">Welcome to DLfilter.</b><small class="form-text"
+                                    id="welcome-version">ver/-</small></h2>
+                            <p id="welcome-subtitle">A place to filter anything you love on DLsite</p>
+                            <p class="visually-hidden text-muted" id="search-info"><span id="search-info-count">-</span>
+                                works (<span id="search-info-time">-</span> seconds) <span class="vr mx-2"></span>
+                                Showing <span id="search-info-start"></span> - <span id="search-info-end"></span>
+                                results:</p>
+                            <h5 id="welcome-start-hint" class="collapse show">Start by adding genres or typing the work
+                                ID in the search panel.
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center visually-hidden" id="loading-spinner-container">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="row g-4 collapse" id="result-card-container">
+                        <!-- <div class="col-xxl-3 col-xl-4 col-sm-6 col-12">
+                            <div class="work-card rounded-3 shadow-sm">
+                                <div class="work-thumb">
+                                    <a data-bs-toggle="collapse" href="#" role="button">
+                                        <img src="https://img.dlsite.jp/resize/images2/work/doujin/RJ01050000/RJ01049601_img_main_240x240.jpg"
+                                            class="rounded-3 shadow-sm" alt=""></a>
+                                    <div class="work-badge-container px-2">
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-light-subtle border border-dark-subtle">Game
+                                            CG</span>
+                                    </div>
+                                    <div class="work-info-container rounded-bottom-3 p-2">
+                                        <div class="work-info-title px-1 pb-1"><b>Title of the work, but it is very very
+                                                long</b></div>
+                                        <div class="row justify-content-start">
+                                            <div class="col-8">
+                                                <div
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-star"></i> 5.0 (115)
+                                                    <span class="vr mx-2"></span>
+                                                    <i class="fa-solid fa-download"></i> 123456
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <a href="#"
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-comment"></i> 32
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="">
+                                    <div class="px-3 pt-2 pb-3 work-card-content">
+                                        <div><b>Artist</b> - Date</div>
+                                        <small>Desciption of the work, sevred as a preview of the work. </small>
+                                        <div class="mt-1">
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-xl-4 col-sm-6 col-12">
+                            <div class="work-card rounded-3 shadow-sm">
+                                <div class="work-thumb">
+                                    <a data-bs-toggle="collapse" href="#" role="button">
+                                        <img src="https://img.dlsite.jp/resize/images2/work/doujin/RJ01050000/RJ01049601_img_main_240x240.jpg"
+                                            class="rounded-3 shadow-sm" alt=""></a>
+                                    <div class="work-badge-container px-2">
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-light-subtle border border-dark-subtle">Game
+                                            CG</span>
+                                    </div>
+                                    <div class="work-info-container rounded-bottom-3 p-2">
+                                        <div class="work-info-title px-1 pb-1"><b>Title of the work, but it is very very
+                                                long</b></div>
+                                        <div class="row justify-content-start">
+                                            <div class="col-8">
+                                                <div
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-star"></i> 5.0 (115)
+                                                    <span class="vr mx-2"></span>
+                                                    <i class="fa-solid fa-download"></i> 123456
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <a href="#"
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-comment"></i> 32
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="">
+                                    <div class="px-3 pt-2 pb-3 work-card-content">
+                                        <div><b>Artist</b> - Date</div>
+                                        <small>Desciption of the work, sevred as a preview of the work. </small>
+                                        <div class="mt-1">
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-xl-4 col-sm-6 col-12">
+                            <div class="work-card rounded-3 shadow-sm">
+                                <div class="work-thumb">
+                                    <a data-bs-toggle="collapse" href="#" role="button">
+                                        <img src="https://img.dlsite.jp/resize/images2/work/doujin/RJ01050000/RJ01049601_img_main_240x240.jpg"
+                                            class="rounded-3 shadow-sm" alt=""></a>
+                                    <div class="work-badge-container px-2">
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-light-subtle border border-dark-subtle">Game
+                                            CG</span>
+                                    </div>
+                                    <div class="work-info-container rounded-bottom-3 p-2">
+                                        <div class="work-info-title px-1 pb-1"><b>Title of the work, but it is very very
+                                                long</b></div>
+                                        <div class="row justify-content-start">
+                                            <div class="col-8">
+                                                <div
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-star"></i> 5.0 (115)
+                                                    <span class="vr mx-2"></span>
+                                                    <i class="fa-solid fa-download"></i> 123456
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <a href="#"
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-comment"></i> 32
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="">
+                                    <div class="px-3 pt-2 pb-3 work-card-content">
+                                        <div><b>Artist</b> - Date</div>
+                                        <small>Desciption of the work, sevred as a preview of the work. </small>
+                                        <div class="mt-1">
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-xl-4 col-sm-6 col-12">
+                            <div class="work-card rounded-3 shadow-sm">
+                                <div class="work-thumb">
+                                    <a data-bs-toggle="collapse" href="#" role="button">
+                                        <img src="https://img.dlsite.jp/resize/images2/work/doujin/RJ01050000/RJ01049601_img_main_240x240.jpg"
+                                            class="rounded-3 shadow-sm" alt=""></a>
+                                    <div class="work-badge-container px-2">
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-light-subtle border border-dark-subtle">Game
+                                            CG</span>
+                                    </div>
+                                    <div class="work-info-container rounded-bottom-3 p-2">
+                                        <div class="work-info-title px-1 pb-1"><b>Title of the work, but it is very very
+                                                long</b></div>
+                                        <div class="row justify-content-start">
+                                            <div class="col-8">
+                                                <div
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-star"></i> 5.0 (115)
+                                                    <span class="vr mx-2"></span>
+                                                    <i class="fa-solid fa-download"></i> 123456
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <a href="#"
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-comment"></i> 32
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="">
+                                    <div class="px-3 pt-2 pb-3 work-card-content">
+                                        <div><b>Artist</b> - Date</div>
+                                        <small>Desciption of the work, sevred as a preview of the work. </small>
+                                        <div class="mt-1">
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-xl-4 col-sm-6 col-12">
+                            <div class="work-card rounded-3 shadow-sm">
+                                <div class="work-thumb">
+                                    <a data-bs-toggle="collapse" href="#" role="button">
+                                        <img src="https://img.dlsite.jp/resize/images2/work/doujin/RJ01050000/RJ01049601_img_main_240x240.jpg"
+                                            class="rounded-3 shadow-sm" alt=""></a>
+                                    <div class="work-badge-container px-2">
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-light-subtle border border-dark-subtle">Game
+                                            CG</span>
+                                    </div>
+                                    <div class="work-info-container rounded-bottom-3 p-2">
+                                        <div class="work-info-title px-1 pb-1"><b>Title of the work, but it is very very
+                                                long</b></div>
+                                        <div class="row justify-content-start">
+                                            <div class="col-8">
+                                                <div
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-star"></i> 5.0 (115)
+                                                    <span class="vr mx-2"></span>
+                                                    <i class="fa-solid fa-download"></i> 123456
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <a href="#"
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-comment"></i> 32
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="">
+                                    <div class="px-3 pt-2 pb-3 work-card-content">
+                                        <div><b>Artist</b> - Date</div>
+                                        <small>Desciption of the work, sevred as a preview of the work. </small>
+                                        <div class="mt-1">
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xxl-3 col-xl-4 col-sm-6 col-12">
+                            <div class="work-card rounded-3 shadow-sm">
+                                <div class="work-thumb">
+                                    <a data-bs-toggle="collapse" href="#" role="button">
+                                        <img src="https://img.dlsite.jp/resize/images2/work/doujin/RJ01050000/RJ01049601_img_main_240x240.jpg"
+                                            class="rounded-3 shadow-sm" alt=""></a>
+                                    <div class="work-badge-container px-2">
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        <span
+                                            class="badge rounded-pill shadow-sm text-dark-emphasis bg-light-subtle border border-dark-subtle">Game
+                                            CG</span>
+                                    </div>
+                                    <div class="work-info-container rounded-bottom-3 p-2">
+                                        <div class="work-info-title px-1 pb-1"><b>Title of the work, but it is very very
+                                                long</b></div>
+                                        <div class="row justify-content-start">
+                                            <div class="col-8">
+                                                <div
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-star"></i> 5.0 (115)
+                                                    <span class="vr mx-2"></span>
+                                                    <i class="fa-solid fa-download"></i> 123456
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <a href="#"
+                                                    class="badge work-info-badge rounded-pill shadow-sm border border-light-subtle">
+                                                    <i class="fa-solid fa-comment"></i> 32
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="">
+                                    <div class="px-3 pt-2 pb-3 work-card-content">
+                                        <div><b>Artist</b> - Date</div>
+                                        <small>Desciption of the work, sevred as a preview of the work. </small>
+                                        <div class="mt-1">
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                            <span
+                                                class="badge rounded-pill shadow-sm text-dark-emphasis bg-primary-subtle border border-primary-subtle">86.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div class="row my-4 text-center">
+                        <div class="mb-4" id="search-end-of-result" style="display: none;"></div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center" id="pagination-container"></ul>
+                        </nav>
+                        <div class="mb-3">
+                            <small class="py-1 px-2 border rounded-3" id="welcome-info">Collection of <span
+                                    id="banner-text">-</span> works since the
+                                millennium - Last updated
+                                on
+                                <span id="navbar-time">-</span></small>
+                        </div>
+                        <small>Made with 🔞 by <a href="https://github.com/snowmeow2/DLfilter"
+                                target="_blank">snowmeow2</a></small>
+                    </div>
+
                 </div>
             </div>
-        </div>
-    </div>
-
-    <br>
-    <br>
-    <br>
-    <figure class="text-center" id="footer-quote" style="display: none;">
-        <blockquote class="blockquote">
-            <p>思九州之博大兮，豈唯是其有女？</p>
-        </blockquote>
-    </figure>
-    <br>
-    <br>
+    </main>
+    <footer></footer>
 </body>
 
 </html>
