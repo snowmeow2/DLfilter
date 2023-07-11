@@ -2,7 +2,7 @@
 [English](README.md) | 正體中文
 
 以標籤語意驅動的 DLsite 作品搜尋引擎。
-> Demo: [https://www.dlfilter.moe/](https://www.dlfilter.moe/)
+> Demo: [https://dlfilter.moe/](https://dlfilter.moe/)
 > (可能隨時下線)
 
 DLfilter 希望為 DLsite 的作品搜尋提供更好的體驗。
@@ -26,7 +26,7 @@ DLfilter *無法*以人氣搜尋作品，因為沒有辦法即時更新這個資
 
 ## 安裝
 以下的說明是給想自己部署 DLfilter 服務的人用的（尤其是當你發現我的 Demo 掛掉時）。
-如果你只是想用 DLfilter，請直接前往 [https://www.dlfilter.moe/](https://www.dlfilter.moe/)。
+如果你只是想用 DLfilter，請直接前往 [https://dlfilter.moe/](https://dlfilter.moe/)。
 
 你需要 Python 3.10 來安裝 DLfilter。
 

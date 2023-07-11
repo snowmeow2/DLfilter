@@ -2,7 +2,7 @@
 English | [正體中文](README.zh-tw.md)
 
 Tag semantic-driven search engine for DLsite works. 
-> Demo: [https://www.dlfilter.moe/](https://www.dlfilter.moe/) 
+> Demo: [https://dlfilter.moe/](https://dlfilter.moe/) 
 > (may be offline at any time)
 
 DLfilter aims to provide a better experience for searching works on DLsite.
@@ -26,7 +26,7 @@ DLfilter *cannot* search works by popularity as it requires real-time update of 
 
 ## Installation
 The following instructions are for people who want to deploy on their own service (especially when my demo is down).
-If you just want to use DLfilter, please visit [https://www.dlfilter.moe/](https://www.dlfilter.moe/).
+If you just want to use DLfilter, please visit [https://dlfilter.moe/](https://dlfilter.moe/).
 
 Python 3.10 is required. 
 
