@@ -49,7 +49,7 @@ pip install -r requirements.txt
 
 1. Start the server
 ```bash
-uvicorn main:app
+uvicorn app:app --port 8000
 ```
 You should be able to access the website at `http://localhost:8000/`.
 

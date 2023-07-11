@@ -49,7 +49,7 @@ pip install -r requirements.txt
 
 4. 啟動伺服器
 ```bash
-uvicorn main:app
+uvicorn app:app --port 8000
 ```
 你應該可以在 `http://localhost:8000/` 看到網站。
 

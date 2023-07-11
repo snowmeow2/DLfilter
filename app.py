@@ -106,7 +106,7 @@ class SimilarityQuery(BaseModel):
     )
 
 
-RJ_ID_REGEX = constr(regex=r"^RJ(?:\d{8}|\d{6})$")
+RJ_ID_REGEX = constr(pattern=r"^RJ(?:\d{8}|\d{6})$")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -128,7 +128,7 @@ async def root(request: Request):
 
 
 @app.get("/api/info")
-async def get_info() -> dict[str, str]:
+async def get_info() -> dict[str, Any]:
     """
     Get the information of the database.
 
